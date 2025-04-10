@@ -5,7 +5,7 @@
 [常见问题](https://github.com/kolbytn/mindcraft/blob/main/FAQ.md) | [Discord支持](https://discord.gg/mp73p35dzC) | [English Version](README.md) | [视频教程](https://www.youtube.com/watch?v=gRotoL8P8D8) | [博客文章](https://kolbynottingham.com/mindcraft/) | [贡献者TODO](https://github.com/users/kolbytn/projects/1)
 
 > [!警告]
-> 请勿将开启代码编写功能的机器人连接到公共服务器。本项目允许LLM在您的计算机上编写/执行代码，代码虽然运行在沙箱中但仍存在注入攻击风险。代码编写功能默认关闭，如需启用请在`settings.js`中将`allow_insecure_coding`设为`true`。后果自负。
+请勿将开启代码编写功能的机器人连接到公共服务器。本项目允许LLM在您的计算机上编写/执行代码，代码虽然运行在沙箱中但仍存在注入攻击风险。代码编写功能默认关闭，如需启用请在`settings.js`中将`allow_insecure_coding`设为`true`。后果自负。
 
 ## 环境要求
 
