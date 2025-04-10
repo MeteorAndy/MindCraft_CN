@@ -130,8 +130,7 @@ export class Agent {
                     console.warn('received whisper from other bot??')
                 }
                 else {
-                    let translation = await handleEnglishTranslation(message);
-                    this.handleMessage(username, translation);
+                    this.handleMessage(username, message);
                 }
             } catch (error) {
                 console.error('Error handling message:', error);
@@ -237,7 +236,7 @@ export class Agent {
             this.last_sender = source;
 
         // Now translate the message
-        message = await handleEnglishTranslation(message);
+        // message = await handleEnglishTranslation(message);  // 注释掉强制翻译为英文的逻辑
         console.log('received message from', source, ':', message);
 
         const checkInterrupt = () => this.self_prompter.shouldInterrupt(self_prompt) || this.shut_up || convoManager.responseScheduledFor(source);
@@ -347,7 +346,7 @@ export class Agent {
             to_translate = to_translate.substring(0, translate_up_to);
             remaining = message.substring(translate_up_to);
         }
-        message = (await handleTranslation(to_translate)).trim() + " " + remaining;
+        message = to_translate.trim() + " " + remaining;
         // newlines are interpreted as separate chats, which triggers spam filters. replace them with spaces
         message = message.replaceAll('\n', ' ');
 
