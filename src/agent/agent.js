@@ -10,7 +10,6 @@ import { NPCContoller } from './npc/controller.js';
 import { MemoryBank } from './memory_bank.js';
 import { SelfPrompter } from './self_prompter.js';
 import convoManager from './conversation.js';
-import { handleTranslation, handleEnglishTranslation } from '../utils/translator.js';
 import { addBrowserViewer } from './vision/browser_viewer.js';
 import settings from '../../settings.js';
 import { serverProxy } from './agent_proxy.js';
@@ -235,8 +234,7 @@ export class Agent {
         if (from_other_bot)
             this.last_sender = source;
 
-        // Now translate the message
-        // message = await handleEnglishTranslation(message);  // 注释掉强制翻译为英文的逻辑
+        // 不翻译消息，保持用户输入的原始语言
         console.log('received message from', source, ':', message);
 
         const checkInterrupt = () => this.self_prompter.shouldInterrupt(self_prompt) || this.shut_up || convoManager.responseScheduledFor(source);
