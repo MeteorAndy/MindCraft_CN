@@ -33,8 +33,8 @@ const modes_list = [
             const bot = agent.bot;
             let block = bot.blockAt(bot.entity.position);
             let blockAbove = bot.blockAt(bot.entity.position.offset(0, 1, 0));
-            if (!block) block = {name: 'air'}; // hacky fix when blocks are not loaded
-            if (!blockAbove) blockAbove = {name: 'air'};
+            if (!block) block = { name: 'air' }; // hacky fix when blocks are not loaded
+            if (!blockAbove) blockAbove = { name: 'air' };
             if (blockAbove.name === 'water' || blockAbove.name === 'flowing_water') {
                 // does not call execute so does not interrupt other actions
                 if (!bot.pathfinder.goal) {
@@ -48,13 +48,13 @@ const modes_list = [
             }
             else if (block.name === 'lava' || block.name === 'flowing_lava' || block.name === 'fire' ||
                 blockAbove.name === 'lava' || blockAbove.name === 'flowing_lava' || blockAbove.name === 'fire') {
-                say(agent, 'I\'m on fire!'); // TODO: gets stuck in lava
+                say(agent, '我着火了！'); // TODO: gets stuck in lava
                 execute(this, agent, async () => {
                     let nearestWater = world.getNearestBlock(bot, 'water', 20);
                     if (nearestWater) {
                         const pos = nearestWater.position;
                         await skills.goToPosition(bot, pos.x, pos.y, pos.z, 0.2);
-                        say(agent, 'Ahhhh that\'s better!');
+                        say(agent, '啊，好多了！');
                     }
                     else {
                         await skills.moveAway(bot, 5);
@@ -62,7 +62,7 @@ const modes_list = [
                 });
             }
             else if (Date.now() - bot.lastDamageTime < 3000 && (bot.health < 5 || bot.lastDamageTaken >= bot.health)) {
-                say(agent, 'I\'m dying!');
+                say(agent, '我快死了！');
                 execute(this, agent, async () => {
                     await skills.moveAway(bot, 20);
                 });
@@ -85,7 +85,7 @@ const modes_list = [
         max_stuck_time: 20,
         prev_dig_block: null,
         update: async function (agent) {
-            if (agent.isIdle()) { 
+            if (agent.isIdle()) {
                 this.prev_location = null;
                 this.stuck_time = 0;
                 return; // don't get stuck when idle
@@ -104,13 +104,13 @@ const modes_list = [
                 this.prev_dig_block = null;
             }
             if (this.stuck_time > this.max_stuck_time) {
-                say(agent, 'I\'m stuck!');
+                say(agent, '我被卡住了！');
                 this.stuck_time = 0;
                 execute(this, agent, async () => {
-                    const crashTimeout = setTimeout(() => { agent.cleanKill("Got stuck and couldn't get unstuck") }, 10000);
+                    const crashTimeout = setTimeout(() => { agent.cleanKill("被卡住了，无法脱身") }, 10000);
                     await skills.moveAway(bot, 5);
                     clearTimeout(crashTimeout);
-                    say(agent, 'I\'m free.');
+                    say(agent, '我脱身了。');
                 });
             }
             this.last_time = Date.now();
@@ -125,7 +125,7 @@ const modes_list = [
         update: async function (agent) {
             const enemy = world.getNearestEntityWhere(agent.bot, entity => mc.isHostile(entity), 16);
             if (enemy && await world.isClearPath(agent.bot, enemy)) {
-                say(agent, `Aaa! A ${enemy.name.replace("_", " ")}!`);
+                say(agent, `啊啊！有${enemy.name.replace("_", " ")}！`);
                 execute(this, agent, async () => {
                     await skills.avoidEnemies(agent.bot, 24);
                 });
@@ -141,7 +141,7 @@ const modes_list = [
         update: async function (agent) {
             const enemy = world.getNearestEntityWhere(agent.bot, entity => mc.isHostile(entity), 8);
             if (enemy && await world.isClearPath(agent.bot, enemy)) {
-                say(agent, `Fighting ${enemy.name}!`);
+                say(agent, `正在与${enemy.name}战斗！`);
                 execute(this, agent, async () => {
                     await skills.defendSelf(agent.bot, 8);
                 });
@@ -158,7 +158,7 @@ const modes_list = [
             const huntable = world.getNearestEntityWhere(agent.bot, entity => mc.isHuntable(entity), 8);
             if (huntable && await world.isClearPath(agent.bot, huntable)) {
                 execute(this, agent, async () => {
-                    say(agent, `Hunting ${huntable.name}!`);
+                    say(agent, `正在狩猎${huntable.name}！`);
                     await skills.attackEntity(agent.bot, huntable);
                 });
             }
@@ -182,7 +182,7 @@ const modes_list = [
                     this.noticed_at = Date.now();
                 }
                 if (Date.now() - this.noticed_at > this.wait * 1000) {
-                    say(agent, `Picking up item!`);
+                    say(agent, `正在捡起物品！`);
                     this.prev_item = item;
                     execute(this, agent, async () => {
                         await skills.pickupNearbyItems(agent.bot);
@@ -255,7 +255,7 @@ const modes_list = [
             }
             if (entity_in_view && this.staring) {
                 let isbaby = entity.type !== 'player' && entity.metadata[16];
-                let height = isbaby ? entity.height/2 : entity.height;
+                let height = isbaby ? entity.height / 2 : entity.height;
                 agent.bot.lookAt(entity.position.offset(0, height, 0));
             }
             if (!entity_in_view)
@@ -265,7 +265,7 @@ const modes_list = [
                 this.staring = Math.random() < 0.3;
                 if (!this.staring) {
                     const yaw = Math.random() * Math.PI * 2;
-                    const pitch = (Math.random() * Math.PI/2) - Math.PI/4;
+                    const pitch = (Math.random() * Math.PI / 2) - Math.PI / 4;
                     agent.bot.look(yaw, pitch, false);
                 }
                 this.next_change = Date.now() + Math.random() * 10000 + 2000;
@@ -282,7 +282,7 @@ const modes_list = [
     }
 ];
 
-async function execute(mode, agent, func, timeout=-1) {
+async function execute(mode, agent, func, timeout = -1) {
     if (agent.self_prompter.isActive())
         agent.self_prompter.stopLoop();
     let interrupted_action = agent.actions.currentActionLabel;
@@ -291,9 +291,9 @@ async function execute(mode, agent, func, timeout=-1) {
         await func();
     }, { timeout });
     mode.active = false;
-    console.log(`Mode ${mode.name} finished executing, code_return: ${code_return.message}`);
+    console.log(`模式 ${mode.name} 执行完成，返回代码: ${code_return.message}`);
 
-    let should_reprompt = 
+    let should_reprompt =
         interrupted_action && // it interrupted a previous action
         !agent.actions.resume_func && // there is no resume function
         !agent.self_prompter.isActive() && // self prompting is not on
@@ -303,8 +303,8 @@ async function execute(mode, agent, func, timeout=-1) {
         // auto prompt to respond to the interruption
         let role = convoManager.inConversation() ? agent.last_sender : 'system';
         let logs = agent.bot.modes.flushBehaviorLog();
-        agent.handleMessage(role, `(AUTO MESSAGE)Your previous action '${interrupted_action}' was interrupted by ${mode.name}.
-        Your behavior log: ${logs}\nRespond accordingly.`);
+        agent.handleMessage(role, `(自动消息)你之前的动作 '${interrupted_action}' 被 ${mode.name} 打断了。
+        你的行为日志: ${logs}\n请做出相应回应。`);
     }
 }
 
@@ -347,24 +347,24 @@ class ModeController {
 
     unPauseAll() {
         for (let mode of modes_list) {
-            if (mode.paused) console.log(`Unpausing mode ${mode.name}`);
+            if (mode.paused) console.log(`正在取消暂停模式 ${mode.name}`);
             mode.paused = false;
         }
     }
 
     getMiniDocs() { // no descriptions
-        let res = 'Agent Modes:';
+        let res = '代理模式:';
         for (let mode of modes_list) {
-            let on = mode.on ? 'ON' : 'OFF';
+            let on = mode.on ? '开启' : '关闭';
             res += `\n- ${mode.name}(${on})`;
         }
         return res;
     }
 
     getDocs() {
-        let res = 'Agent Modes:';
+        let res = '代理模式:';
         for (let mode of modes_list) {
-            let on = mode.on ? 'ON' : 'OFF';
+            let on = mode.on ? '开启' : '关闭';
             res += `\n- ${mode.name}(${on}): ${mode.description}`;
         }
         return res;
@@ -418,3 +418,4 @@ export function initModes(agent) {
         agent.bot.modes.loadJson(modes_json);
     }
 }
+

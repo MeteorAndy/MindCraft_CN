@@ -29,7 +29,7 @@ export function createMindServer(port = 8080) {
         agentsUpdate(socket);
 
         socket.on('register-agents', (agentNames) => {
-            console.log(`Registering agents: ${agentNames}`);
+            console.log(`正在注册代理: ${agentNames}`);
             agentNames.forEach(name => registeredAgents.add(name));
             for (let name of agentNames) {
                 agentManagers[name] = socket;
@@ -40,7 +40,7 @@ export function createMindServer(port = 8080) {
 
         socket.on('login-agent', (agentName) => {
             if (curAgentName && curAgentName !== agentName) {
-                console.warn(`Agent ${agentName} already logged in as ${curAgentName}`);
+                console.warn(`代理 ${agentName} 已经以 ${curAgentName} 的身份登录`);
                 return;
             }
             if (registeredAgents.has(agentName)) {
@@ -48,7 +48,7 @@ export function createMindServer(port = 8080) {
                 inGameAgents[agentName] = socket;
                 agentsUpdate();
             } else {
-                console.warn(`Agent ${agentName} not registered`);
+                console.warn(`代理 ${agentName} 未注册`);
             }
         });
 
@@ -69,15 +69,15 @@ export function createMindServer(port = 8080) {
 
         socket.on('chat-message', (agentName, json) => {
             if (!inGameAgents[agentName]) {
-                console.warn(`Agent ${agentName} tried to send a message but is not logged in`);
+                console.warn(`代理 ${agentName} 尝试发送消息但未登录`);
                 return;
             }
-            console.log(`${curAgentName} sending message to ${agentName}: ${json.message}`);
+            console.log(`${curAgentName} 正在向 ${agentName} 发送消息: ${json.message}`);
             inGameAgents[agentName].emit('chat-message', curAgentName, json);
         });
 
         socket.on('restart-agent', (agentName) => {
-            console.log(`Restarting agent: ${agentName}`);
+            console.log(`正在重启代理: ${agentName}`);
             inGameAgents[agentName].emit('restart-agent');
         });
 
@@ -87,7 +87,7 @@ export function createMindServer(port = 8080) {
                 manager.emit('stop-agent', agentName);
             }
             else {
-                console.warn(`Stopping unregisterd agent ${agentName}`);
+                console.warn(`正在停止未注册的代理 ${agentName}`);
             }
         });
 
@@ -97,7 +97,7 @@ export function createMindServer(port = 8080) {
                 manager.emit('start-agent', agentName);
             }
             else {
-                console.warn(`Starting unregisterd agent ${agentName}`);
+                console.warn(`正在启动未注册的代理 ${agentName}`);
             }
         });
 
@@ -116,22 +116,22 @@ export function createMindServer(port = 8080) {
             }, 2000);
         });
 
-		socket.on('send-message', (agentName, message) => {
-			if (!inGameAgents[agentName]) {
-				console.warn(`Agent ${agentName} not logged in, cannot send message via MindServer.`);
-				return
-			}
-			try {
-				console.log(`Sending message to agent ${agentName}: ${message}`);
-				inGameAgents[agentName].emit('send-message', agentName, message)
-			} catch (error) {
-				console.error('Error: ', error);
-			}
-		});
+        socket.on('send-message', (agentName, message) => {
+            if (!inGameAgents[agentName]) {
+                console.warn(`代理 ${agentName} 未登录，无法通过MindServer发送消息`);
+                return
+            }
+            try {
+                console.log(`正在向代理 ${agentName} 发送消息: ${message}`);
+                inGameAgents[agentName].emit('send-message', agentName, message)
+            } catch (error) {
+                console.error('错误: ', error);
+            }
+        });
     });
 
     server.listen(port, 'localhost', () => {
-        console.log(`MindServer running on port ${port}`);
+        console.log(`MindServer正在端口 ${port} 上运行`);
     });
 
     return server;

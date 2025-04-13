@@ -21,10 +21,10 @@ export class Agent {
         this.last_sender = null;
         this.count_id = count_id;
         if (!profile_fp) {
-            throw new Error('No profile filepath provided');
+            throw new Error('没有提供配置文件路径');
         }
         
-        console.log('Starting agent initialization with profile:', profile_fp);
+        console.log('正在使用配置文件初始化代理:', profile_fp);
         
         // Initialize components with more detailed error handling
         console.log('正在初始化动作管理器...');
@@ -85,7 +85,7 @@ export class Agent {
                 // wait for a bit so stats are not undefined
                 await new Promise((resolve) => setTimeout(resolve, 1000));
                 
-                console.log(`${this.name} spawned.`);
+                console.log(`${this.name} 已生成。`);
                 this.clearBotLogs();
 
                 this._setupEventHandlers(save_data, init_message);
@@ -99,7 +99,7 @@ export class Agent {
                 this.vision_interpreter = new VisionInterpreter(this, settings.allow_vision);
 
             } catch (error) {
-                console.error('Error in spawn event:', error);
+                console.error('生成事件出错:', error);
                 process.exit(0);
             }
         });
@@ -107,12 +107,12 @@ export class Agent {
 
     async _setupEventHandlers(save_data, init_message) {
         const ignore_messages = [
-            "Set own game mode to",
-            "Set the time to",
-            "Set the difficulty to",
-            "Teleported ",
-            "Set the weather to",
-            "Gamerule "
+            "设置游戏模式为",
+            "设置时间为", 
+            "设置难度为",
+            "传送",
+            "设置天气为",
+            "游戏规则"
         ];
         
         const respondFunc = async (username, message) => {
@@ -123,16 +123,16 @@ export class Agent {
 
                 this.shut_up = false;
 
-                console.log(this.name, 'received message from', username, ':', message);
+                console.log(this.name, '收到来自', username, '的消息:', message);
 
                 if (convoManager.isOtherAgent(username)) {
-                    console.warn('received whisper from other bot??')
+                    console.warn('收到其他机器人的私聊??')
                 }
                 else {
                     this.handleMessage(username, message);
                 }
             } catch (error) {
-                console.error('Error handling message:', error);
+                console.error('处理消息时出错:', error);
             }
         }
 		
@@ -146,7 +146,7 @@ export class Agent {
         this.bot.autoEat.options = {
             priority: 'foodPoints',
             startAt: 14,
-            bannedFood: ["rotten_flesh", "spider_eye", "poisonous_potato", "pufferfish", "chicken"]
+            bannedFood: ["腐肉", "蜘蛛眼", "毒马铃薯", "河豚", "生鸡肉"]
         };
 
         if (save_data?.self_prompt) {
@@ -159,7 +159,7 @@ export class Agent {
             this.last_sender = save_data.last_sender;
             if (convoManager.otherAgentInGame(this.last_sender)) {
                 const msg_package = {
-                    message: `You have restarted and this message is auto-generated. Continue the conversation with me.`,
+                    message: `你已重新启动，这是自动生成的消息。请继续与我对话。`,
                     start: true
                 };
                 convoManager.receiveFromBot(this.last_sender, msg_package);
@@ -169,7 +169,7 @@ export class Agent {
             await this.handleMessage('system', init_message, 2);
         }
         else {
-            this.openChat("Hello world! I am "+this.name);
+            this.openChat("你好世界！我是 "+this.name);
         }
     }
 
@@ -196,7 +196,7 @@ export class Agent {
 
     async handleMessage(source, message, max_responses=null) {
         if (!source || !message) {
-            console.warn('Received empty message from', source);
+            console.warn('收到来自', source, '的空消息');
             return false;
         }
 
@@ -215,10 +215,10 @@ export class Agent {
             const user_command_name = containsCommand(message);
             if (user_command_name) {
                 if (!commandExists(user_command_name)) {
-                    this.routeResponse(source, `Command '${user_command_name}' does not exist.`);
+                    this.routeResponse(source, `命令 '${user_command_name}' 不存在。`);
                     return false;
                 }
-                this.routeResponse(source, `*${source} used ${user_command_name.substring(1)}*`);
+                this.routeResponse(source, `*${source} 使用了 ${user_command_name.substring(1)}*`);
                 if (user_command_name === '!newAction') {
                     // all user-initiated commands are ignored by the bot except for this one
                     // add the preceding message to the history to give context for newAction
@@ -234,8 +234,7 @@ export class Agent {
         if (from_other_bot)
             this.last_sender = source;
 
-        // 不翻译消息，保持用户输入的原始语言
-        console.log('received message from', source, ':', message);
+        console.log('收到来自', source, '的消息:', message);
 
         const checkInterrupt = () => this.self_prompter.shouldInterrupt(self_prompt) || this.shut_up || convoManager.responseScheduledFor(source);
         
@@ -245,7 +244,7 @@ export class Agent {
             if (behavior_log.length > MAX_LOG) {
                 behavior_log = '...' + behavior_log.substring(behavior_log.length - MAX_LOG);
             }
-            behavior_log = 'Recent behaviors log: \n' + behavior_log;
+            behavior_log = '最近的行为日志: \n' + behavior_log;
             await this.history.add('system', behavior_log);
         }
 
@@ -260,10 +259,10 @@ export class Agent {
             let history = this.history.getHistory();
             let res = await this.prompter.promptConvo(history);
 
-            console.log(`${this.name} full response to ${source}: ""${res}""`);
+            console.log(`${this.name} 对 ${source} 的完整回复: ""${res}""`);
             
             if (res.trim().length === 0) { 
-                console.warn('no response')
+                console.warn('没有回复')
                 break; // empty response ends loop
             }
 
@@ -274,8 +273,8 @@ export class Agent {
                 this.history.add(this.name, res);
                 
                 if (!commandExists(command_name)) {
-                    this.history.add('system', `Command ${command_name} does not exist.`);
-                    console.warn('Agent hallucinated command:', command_name)
+                    this.history.add('system', `命令 ${command_name} 不存在。`);
+                    console.warn('代理幻想出了命令:', command_name)
                     continue;
                 }
 
@@ -287,7 +286,7 @@ export class Agent {
                 }
                 else { // only output command name
                     let pre_message = res.substring(0, res.indexOf(command_name)).trim();
-                    let chat_message = `*used ${command_name.substring(1)}*`;
+                    let chat_message = `*使用了 ${command_name.substring(1)}*`;
                     if (pre_message.length > 0)
                         chat_message = `${pre_message}  ${chat_message}`;
                     this.routeResponse(source, chat_message);
@@ -295,7 +294,7 @@ export class Agent {
 
                 let execute_res = await executeCommand(this, res);
 
-                console.log('Agent executed:', command_name, 'and got:', execute_res);
+                console.log('代理执行了:', command_name, '并得到:', execute_res);
                 used_command = true;
 
                 if (execute_res)
@@ -386,31 +385,31 @@ export class Agent {
         });
         // Logging callbacks
         this.bot.on('error' , (err) => {
-            console.error('Error event!', err);
+            console.error('错误事件!', err);
         });
         this.bot.on('end', (reason) => {
-            console.warn('Bot disconnected! Killing agent process.', reason)
-            this.cleanKill('Bot disconnected! Killing agent process.');
+            console.warn('机器人断开连接！正在终止代理进程。', reason)
+            this.cleanKill('机器人断开连接！正在终止代理进程。');
         });
         this.bot.on('death', () => {
             this.actions.cancelResume();
             this.actions.stop();
         });
         this.bot.on('kicked', (reason) => {
-            console.warn('Bot kicked!', reason);
-            this.cleanKill('Bot kicked! Killing agent process.');
+            console.warn('机器人被踢出!', reason);
+            this.cleanKill('机器人被踢出！正在终止代理进程。');
         });
         this.bot.on('messagestr', async (message, _, jsonMsg) => {
             if (jsonMsg.translate && jsonMsg.translate.startsWith('death') && message.startsWith(this.name)) {
-                console.log('Agent died: ', message);
+                console.log('代理死亡: ', message);
                 let death_pos = this.bot.entity.position;
                 this.memory_bank.rememberPlace('last_death_position', death_pos.x, death_pos.y, death_pos.z);
                 let death_pos_text = null;
                 if (death_pos) {
-                    death_pos_text = `x: ${death_pos.x.toFixed(2)}, y: ${death_pos.y.toFixed(2)}, z: ${death_pos.x.toFixed(2)}`;
+                    death_pos_text = `x坐标: ${death_pos.x.toFixed(2)}, y坐标: ${death_pos.y.toFixed(2)}, z坐标: ${death_pos.x.toFixed(2)}`;
                 }
                 let dimention = this.bot.game.dimension;
-                this.handleMessage('system', `You died at position ${death_pos_text || "unknown"} in the ${dimention} dimension with the final message: '${message}'. Your place of death is saved as 'last_death_position' if you want to return. Previous actions were stopped and you have respawned.`);
+                this.handleMessage('system', `你在 ${dimention} 维度的 ${death_pos_text || "未知"} 位置死亡，最后的消息是: '${message}'。你的死亡位置已保存为 'last_death_position'，如果你想返回的话。之前的动作已停止，你已重生。`);
             }
         });
         this.bot.on('idle', () => {
@@ -447,9 +446,9 @@ export class Agent {
         if (this.task.data) {
             let res = this.task.isDone();
             if (res) {
-                await this.history.add('system', `${res.message} ended with code : ${res.code}`);
+                await this.history.add('system', `${res.message} 以代码 ${res.code} 结束`);
                 await this.history.save();
-                console.log('Task finished:', res.message);
+                console.log('任务完成:', res.message);
                 this.killAll();
             }
         }
@@ -459,9 +458,9 @@ export class Agent {
         return !this.actions.executing;
     }
     
-    cleanKill(msg='Killing agent process...', code=1) {
+    cleanKill(msg='正在终止代理进程...', code=1) {
         this.history.add('system', msg);
-        this.bot.chat(code > 1 ? 'Restarting.': 'Exiting.');
+        this.bot.chat(code > 1 ? '正在重启。': '正在退出。');
         this.history.save();
         process.exit(code);
     }

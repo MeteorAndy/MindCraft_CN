@@ -79,7 +79,7 @@ class ConversationManager {
             if (this.awaiting_response && agent.isIdle()) {
                 wait_time += delta;
                 if (wait_time > this.wait_time_limit) {
-                    agent.handleMessage('system', `${convo_partner} hasn't responded in ${this.wait_time_limit/1000} seconds, respond with a message to them or your own action.`);
+                    agent.handleMessage('system', `${convo_partner} 在过去 ${this.wait_time_limit/1000} 秒内没有回应，请回复一条消息或执行你自己的动作。`);
                     wait_time = 0;
                     this.wait_time_limit*=2;
                 }
@@ -97,7 +97,7 @@ class ConversationManager {
                     }
                     if (!agent.self_prompter.isPaused()) {
                         this.endConversation(convo_partner);
-                        agent.handleMessage('system', `${convo_partner} disconnected, conversation has ended.`);
+                        agent.handleMessage('system', `${convo_partner} 已断开连接，对话已结束。`);
                     }
                     else {
                         this.endConversation(convo_partner);
@@ -143,13 +143,13 @@ class ConversationManager {
 
     sendToBot(send_to, message, start=false, open_chat=true) {
         if (!this.isOtherAgent(send_to)) {
-            console.warn(`${agent.name} tried to send bot message to non-bot ${send_to}`);
+            console.warn(`${agent.name} 试图向非机器人 ${send_to} 发送消息`);
             return;
         }
         const convo = this._getConvo(send_to);
         
         if (settings.chat_bot_messages && open_chat)
-            agent.openChat(`(To ${send_to}) ${message}`);
+            agent.openChat(`(发送给 ${send_to}) ${message}`);
         
         if (convo.ignore_until_start)
             return;
@@ -174,7 +174,7 @@ class ConversationManager {
 
         // check if any convo is active besides the sender
         if (this.inConversation() && !this.inConversation(sender)) {
-            this.sendToBot(sender, `I'm talking to someone else, try again later. !endConversation("${sender}")`, false, false);
+            this.sendToBot(sender, `我正在和其他人对话，请稍后再试。 !endConversation("${sender}")`, false, false);
             this.endConversation(sender);
             return;
         }
@@ -296,7 +296,7 @@ async function _scheduleProcessInMessage(sender, received, convo) {
         }
         else {
             let shouldRespond = await agent.prompter.promptShouldRespondToBot(received.message);
-            console.log(`${agent.name} decided to ${shouldRespond?'respond':'not respond'} to ${sender}`);
+            console.log(`${agent.name} 决定${shouldRespond?'回复':'不回复'} ${sender}`);
             if (shouldRespond)
                 scheduleResponse(fastDelay);
         }
@@ -324,7 +324,7 @@ function _compileInMessages(convo) {
 }
 
 function _handleFullInMessage(sender, received) {
-    console.log(`${agent.name} responding to "${received.message}" from ${sender}`);
+    console.log(`${agent.name} 正在回复来自 ${sender} 的消息："${received.message}"`);
     
     const convo = convoManager._getConvo(sender);
     convo.active = true;
@@ -332,7 +332,7 @@ function _handleFullInMessage(sender, received) {
     let message = _tagMessage(received.message);
     if (received.end) {
         convoManager.endConversation(sender);
-        message = `Conversation with ${sender} ended with message: "${message}"`;
+        message = `与 ${sender} 的对话结束，最后消息："${message}"`;
         sender = 'system'; // bot will respond to system instead of the other bot
     }
     else if (received.start)
@@ -341,9 +341,8 @@ function _handleFullInMessage(sender, received) {
     agent.handleMessage(sender, message);
 }
 
-
 function _tagMessage(message) {
-    return "(FROM OTHER BOT)" + message;
+    return "(来自其他机器人)" + message;
 }
 
 async function _resumeSelfPrompter() {

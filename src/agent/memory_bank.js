@@ -20,6 +20,6 @@ export class MemoryBank {
 	}
 
 	getKeys() {
-		return Object.keys(this.memory).join(', ')
+		return Object.keys(this.memory).join('，')
 	}
 }
