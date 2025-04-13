@@ -28,7 +28,7 @@ export class ActionManager {
         }, 10000);
         while (this.executing) {
             this.agent.requestInterrupt();
-            console.log('waiting for code to finish executing...');
+            console.log('等待代码执行完成...');
             await new Promise(resolve => setTimeout(resolve, 300));
         }
         clearTimeout(timeout);
@@ -59,7 +59,7 @@ export class ActionManager {
     async _executeAction(actionLabel, actionFn, timeout = 10) {
         let TIMEOUT;
         try {
-            console.log('executing code...\n');
+            console.log('正在执行代码...\n');
 
             // await current action to finish (executing=false), with 10 seconds timeout
             // also tell agent.bot to stop various actions
@@ -108,7 +108,7 @@ export class ActionManager {
             this.currentActionFn = null;
             clearTimeout(TIMEOUT);
             this.cancelResume();
-            console.error("Code execution triggered catch:", err);
+            console.error("代码执行触发捕获:", err);
             // Log the full stack trace
             console.error(err.stack);
             await this.stop();

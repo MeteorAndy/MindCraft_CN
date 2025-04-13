@@ -24,7 +24,7 @@ export function createMindServer(port = 8080) {
     // Socket.io connection handling
     io.on('connection', (socket) => {
         let curAgentName = null;
-        console.log('Client connected');
+        console.log('客户端已连接');
 
         agentsUpdate(socket);
 
@@ -60,7 +60,7 @@ export function createMindServer(port = 8080) {
         });
 
         socket.on('disconnect', () => {
-            console.log('Client disconnected');
+            console.log('客户端已断开连接');
             if (inGameAgents[curAgentName]) {
                 delete inGameAgents[curAgentName];
                 agentsUpdate();
@@ -102,12 +102,12 @@ export function createMindServer(port = 8080) {
         });
 
         socket.on('stop-all-agents', () => {
-            console.log('Killing all agents');
+            console.log('正在终止所有代理');
             stopAllAgents();
         });
 
         socket.on('shutdown', () => {
-            console.log('Shutting down');
+            console.log('正在关闭');
             for (let manager of Object.values(agentManagers)) {
                 manager.emit('shutdown');
             }
@@ -160,4 +160,4 @@ function stopAllAgents() {
 // Optional: export these if you need access to them from other files
 export const getIO = () => io;
 export const getServer = () => server;
-export const getConnectedAgents = () => connectedAgents; 
+export const getConnectedAgents = () => connectedAgents;

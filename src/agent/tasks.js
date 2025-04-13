@@ -21,12 +21,12 @@ export class TaskValidator {
                 }
                 if (slot && slot.name.toLowerCase() === this.target && slot.count >= this.number_of_target) {
                     valid = true;
-                    console.log('Task is complete');
+                    console.log('任务已完成');
                 }
             });
             if (total_targets >= this.number_of_target) {
                 valid = true;
-                console.log('Task is complete');
+                console.log('任务已完成');
             }
             return valid;
         } catch (error) {
@@ -87,7 +87,7 @@ export class Task {
         if (this.taskTimeout) {
             const elapsedTime = (Date.now() - this.taskStartTime) / 1000;
             if (elapsedTime >= this.taskTimeout) {
-                console.log('Task timeout reached. Task unsuccessful.');
+                console.log('任务超时。任务未成功。');
                 return {"message": 'Task timeout reached', "code": 4};
             }
         }
@@ -119,7 +119,7 @@ export class Task {
         }
     
         if ("initial_inventory" in this.data) {
-            console.log("Setting inventory...");
+            console.log("正在设置物品栏...");
             console.log("Inventory to set:", initial_inventory);
             for (let key of Object.keys(initial_inventory)) {
                 console.log('Giving item:', key);
@@ -127,7 +127,7 @@ export class Task {
             };
             //wait for a bit so inventory is set
             await new Promise((resolve) => setTimeout(resolve, 500));
-            console.log("Done giving inventory items.");
+            console.log("已完成给予物品栏物品。");
         }
         // Function to generate random numbers
     

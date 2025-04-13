@@ -13,7 +13,7 @@ export class SelfPrompter {
     }
 
     start(prompt) {
-        console.log('Self-prompting started.');
+        console.log('自我提示已启动。');
         if (!prompt) {
             if (!this.prompt)
                 return 'No prompt specified. Ignoring request.';
@@ -58,7 +58,7 @@ export class SelfPrompter {
             console.warn('Self-prompt loop is already active. Ignoring request.');
             return;
         }
-        console.log('starting self-prompt loop')
+        console.log('正在启动自我提示循环')
         this.loop_active = true;
         let no_command_count = 0;
         const MAX_NO_COMMAND = 3;
@@ -81,7 +81,7 @@ export class SelfPrompter {
                 await new Promise(r => setTimeout(r, this.cooldown));
             }
         }
-        console.log('self prompt loop stopped')
+        console.log('自我提示循环已停止')
         this.loop_active = false;
         this.interrupt = false;
     }
@@ -95,7 +95,7 @@ export class SelfPrompter {
                 this.idle_time = 0;
 
             if (this.idle_time >= this.cooldown) {
-                console.log('Restarting self-prompting...');
+                console.log('正在重启自我提示...');
                 this.startLoop();
                 this.idle_time = 0;
             }
@@ -109,7 +109,7 @@ export class SelfPrompter {
         // you can call this without await if you don't need to wait for it to finish
         if (this.interrupt)
             return;
-        console.log('stopping self-prompt loop')
+        console.log('正在停止自我提示循环')
         this.interrupt = true;
         while (this.loop_active) {
             await new Promise(r => setTimeout(r, 500));

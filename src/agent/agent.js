@@ -27,32 +27,32 @@ export class Agent {
         console.log('Starting agent initialization with profile:', profile_fp);
         
         // Initialize components with more detailed error handling
-        console.log('Initializing action manager...');
+        console.log('正在初始化动作管理器...');
         this.actions = new ActionManager(this);
-        console.log('Initializing prompter...');
+        console.log('正在初始化提示器...');
         this.prompter = new Prompter(this, profile_fp);
         this.name = this.prompter.getName();
-        console.log('Initializing history...');
+        console.log('正在初始化历史记录...');
         this.history = new History(this);
-        console.log('Initializing coder...');
+        console.log('正在初始化代码器...');
         this.coder = new Coder(this);
-        console.log('Initializing npc controller...');
+        console.log('正在初始化NPC控制器...');
         this.npc = new NPCContoller(this);
-        console.log('Initializing memory bank...');
+        console.log('正在初始化记忆库...');
         this.memory_bank = new MemoryBank();
-        console.log('Initializing self prompter...');
+        console.log('正在初始化自我提示器...');
         this.self_prompter = new SelfPrompter(this);
         convoManager.initAgent(this);            
-        console.log('Initializing examples...');
+        console.log('正在初始化示例...');
         await this.prompter.initExamples();
-        console.log('Initializing task...');
+        console.log('正在初始化任务...');
         this.task = new Task(this, task_path, task_id);
         const blocked_actions = settings.blocked_actions.concat(this.task.blocked_actions || []);
         blacklistCommands(blocked_actions);
 
         serverProxy.connect(this);
 
-        console.log(this.name, 'logging into minecraft...');
+        console.log(this.name, '正在登录Minecraft...');
         this.bot = initBot(this.name);
 
         initModes(this);
@@ -63,7 +63,7 @@ export class Agent {
         }
 
         this.bot.on('login', () => {
-            console.log(this.name, 'logged in!');
+            console.log(this.name, '已登录！');
 
             serverProxy.login();
             
@@ -95,7 +95,7 @@ export class Agent {
                     this.task.initBotTask();
                 }
 
-                console.log('Initializing vision intepreter...');
+                console.log('正在初始化视觉解释器...');
                 this.vision_interpreter = new VisionInterpreter(this, settings.allow_vision);
 
             } catch (error) {

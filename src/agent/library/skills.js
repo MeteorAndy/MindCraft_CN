@@ -91,7 +91,7 @@ export async function craftRecipe(bot, itemName, num=1) {
     }
 
     const recipe = recipes[0];
-    console.log('crafting...');
+    console.log('正在制作...');
     //Check that the agent has sufficient items to use the recipe `num` times.
     const inventory = world.getInventoryCounts(bot); //Items in the agents inventory
     const requiredIngredients = mc.ingredientsFromPrismarineRecipe(recipe); //Items required to use the recipe once.
@@ -177,7 +177,7 @@ export async function smeltItem(bot, itemName, num=1) {
     bot.modes.pause('unstuck');
     await bot.lookAt(furnaceBlock.position);
 
-    console.log('smelting...');
+    console.log('正在熔炼...');
     const furnace = await bot.openFurnace(furnaceBlock);
     // check if the furnace is already smelting something
     let input_item = furnace.inputItem();
@@ -230,7 +230,7 @@ export async function smeltItem(bot, itemName, num=1) {
     await new Promise(resolve => setTimeout(resolve, 200));
     while (total < num) {
         await new Promise(resolve => setTimeout(resolve, 10000));
-        console.log('checking...');
+        console.log('正在检查...');
         let collected = false;
         if (furnace.outputItem()) {
             smelted_item = await furnace.takeOutput();
@@ -281,9 +281,9 @@ export async function clearNearestFurnace(bot) {
         await goToNearestBlock(bot, 'furnace', 4, 32);
     }
 
-    console.log('clearing furnace...');
+    console.log('正在清理熔炉...');
     const furnace = await bot.openFurnace(furnaceBlock);
-    console.log('opened furnace...')
+    console.log('已打开熔炉...')
     // take the items out of the furnace
     let smelted_item, intput_item, fuel_item;
     if (furnace.outputItem())
@@ -338,10 +338,10 @@ export async function attackEntity(bot, entity, kill=true) {
 
     if (!kill) {
         if (bot.entity.position.distanceTo(pos) > 5) {
-            console.log('moving to mob...')
+            console.log('正在移动到生物...')
             await goToPosition(bot, pos.x, pos.y, pos.z);
         }
-        console.log('attacking mob...')
+        console.log('正在攻击生物...')
         await bot.attack(entity);
     }
     else {

@@ -81,7 +81,7 @@ export class Coder {
             }
 
             try {
-                console.log('Executing code...');
+                console.log('正在执行代码...');
                 await executionModule.main(this.agent.bot);
 
                 const code_output = this.agent.actions.getBotOutputSummary();
